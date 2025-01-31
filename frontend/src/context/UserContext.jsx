@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
   const login = (email, password) => {
     setIsLoading(true);
     toast.loading("Logging you in ... ");
-    fetch("http://127.0.0.1:5000/auth/login", {
+    fetch("https://phase4-project-farm-task-manager-2.onrender.com/auth/login", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -45,7 +45,7 @@ export const UserProvider = ({ children }) => {
   const addUser = (username, email, password) => {
     setIsLoading(true);
     toast.loading("Registering ... ");
-    fetch("http://127.0.0.1:5000/auth/register", {
+    fetch("https://phase4-project-farm-task-manager-2.onrender.com/auth/register", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
