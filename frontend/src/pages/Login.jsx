@@ -1,23 +1,26 @@
-import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
-// import { UserContext } from './context/UserContext';
+import React, { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link } from "react-router-dom"; // Import Link
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
+export default function Login() {
+  const { login, logout } = useContext(AuthContext);
+  const navigate = useNavigate(); // Initialize navigate function
 
-export default function Login() 
-{
-
-
-
-  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // ====> To Handle form submission
   const handleSubmit = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
+    login(email, password);
+    navigate("/"); // Redirect to home page after login
+  };
 
-   login(email, password)
-
+  // ====> To Handle logout (if you have a logout functionality)
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // Redirect to login page after logout
   };
 
   return (
@@ -47,8 +50,8 @@ export default function Login()
           </label>
           <input
             type="text"
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none"
             placeholder="Enter Email"
             required
@@ -75,7 +78,7 @@ export default function Login()
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} 
+            onChange={(e) => setPassword(e.target.value)}
             className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none"
             placeholder="Password"
             required
@@ -90,7 +93,7 @@ export default function Login()
         </button>
 
         <div>
-          Not yet registered? <Link to="/register" className='text-orange-500' >Register</Link>
+          Not yet registered? <Link to="/register" className="text-orange-500">Register</Link>
         </div>
       </form>
     </div>

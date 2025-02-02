@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { UserContext } from '../context/UserContext'; // Adjust the path to your UserContext file
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
 export default function Navbar() {
-  const { current_user } = useContext(UserContext); // Access current_user from context
+  const { authToken, logout } = useContext(AuthContext); // Access authToken from context
 
   return (
     <section className="shadow-lg">
@@ -14,24 +14,25 @@ export default function Navbar() {
             <img
               src="https://flowbite.com/docs/images/logo.svg"
               className="h-8"
-              alt="Todo Logo"
+              alt="Farm Task Manager Logo"
             />
             <span className="text-2xl font-semibold text-gray-800 dark:text-white">
               Farm Task Manager
             </span>
           </Link>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu button */}
           <button
             data-collapse-toggle="navbar-default"
             type="button"
-            className="inline-flex items-center justify-center p-2 w-10 h-10 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             aria-controls="navbar-default"
             aria-expanded="false"
           >
             <span className="sr-only">Open main menu</span>
             <svg
               className="w-5 h-5"
+              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 17 14"
@@ -46,10 +47,10 @@ export default function Navbar() {
             </svg>
           </button>
 
-          {/* Navigation Links */}
+          {/* Navigation links */}
           <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 space-y-2 border border-gray-200 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              {current_user ? (
+            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+              {authToken ? (
                 <>
                   <li>
                     <Link
@@ -62,7 +63,7 @@ export default function Navbar() {
                   </li>
                   <li>
                     <Link
-                      to="/Workers"
+                      to="/workers"
                       className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     >
                       Workers
@@ -70,10 +71,10 @@ export default function Navbar() {
                   </li>
                   <li>
                     <Link
-                      to="/workersTask"
+                      to="/WorkersTasks"
                       className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     >
-                      WorkersTask
+                      WorkersTasks
                     </Link>
                   </li>
                   <li>
@@ -86,11 +87,20 @@ export default function Navbar() {
                   </li>
                   <li>
                     <Link
-                      to="/task"
+                      to="/tasks"
                       className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     >
-                      Task
+                      Tasks
                     </Link>
+                  </li>
+                  {/* Logout */}
+                  <li>
+                    <button
+                      onClick={logout}
+                      className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                    >
+                      Logout
+                    </button>
                   </li>
                 </>
               ) : (
@@ -117,6 +127,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-    </section>
+    </section> 
   );
 }

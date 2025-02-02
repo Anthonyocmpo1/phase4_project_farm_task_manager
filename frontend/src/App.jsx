@@ -1,10 +1,12 @@
+import React from 'react';
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { UserProvider } from './context/UserContext';
-import ProtectedRoute from './context/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import { FarmProvider } from './context/FarmContext';
+
 
 import Layout from './components/Layout'
 import Home from './pages/Home';
@@ -20,26 +22,26 @@ import Farms from './pages/Farms';
 
 function App() {
   return (
-    <BrowserRouter>  {/* Wrap the entire app with BrowserRouter */}
-     <UserProvider>
-        
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="login" element={<Login />} />
-              <Route path="register" element={<Register />} />
-
-              {/* Protected Routes */}
-              <Route path="workers" element={<ProtectedRoute><Workers /></ProtectedRoute>} />
-              <Route path="workerTasks" element={<ProtectedRoute><WorkerTasks /></ProtectedRoute>} />
-              <Route path="farms" element={<ProtectedRoute><Farms /></ProtectedRoute>} />
-              <Route path="tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
-
-              <Route path="*" element={<NoPage />} />
-            </Route>
-          </Routes>
-       
-          </UserProvider>
+    <BrowserRouter>
+      <AuthProvider>
+      <FarmProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            {/*
+              Only show these pages if the user is authenticated (has an authToken)
+            */}
+            <Route path="workers" element={<Workers />} />
+            <Route path="workersTasks" element={<WorkerTasks />} />
+            <Route path="farms" element={<Farms />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="*" element={<NoPage />} />
+          </Route>
+        </Routes>
+        </FarmProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

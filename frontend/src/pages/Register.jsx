@@ -1,22 +1,27 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Default import
+import { Link } from 'react-router-dom'; // Add this line for Link
 
 export default function Register() {
-  const { addUser, isLoading } = useContext(UserContext); // Access isLoading
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+  const { register } = useContext(AuthContext); // Assuming register is provided in your AuthContext
 
-  // Handle form submission
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+
+  // ====> To Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (password !== repeatPassword) {
-      alert("Passwords do not match");
+      alert("Passwords don't match");
       return;
     }
-    addUser(username, email, password); // Call addUser function
+
+    // Now using register function instead of addUser
+    register(username, email, password); // Assuming register handles the user creation
   };
 
   return (
@@ -86,16 +91,12 @@ export default function Register() {
         <button
           type="submit"
           className="w-full h-12 bg-orange-600 hover:bg-orange-800 transition-all duration-700 rounded-full shadow-xs text-white text-base font-semibold leading-6 mb-6"
-          disabled={isLoading} // Disable button when loading
         >
-          {isLoading ? "Signing Up..." : "Sign Up"}
+          Sign Up
         </button>
 
         <div>
-          Already have an account?{" "}
-          <Link to="/login" className="text-orange-500">
-            Login
-          </Link>
+          Already have an account? <Link to="/login" className="text-orange-500">Login</Link>
         </div>
       </form>
     </div>

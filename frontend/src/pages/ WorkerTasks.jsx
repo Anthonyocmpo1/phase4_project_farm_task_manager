@@ -1,74 +1,128 @@
-import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
-// import { useFarmContext } from "../context/FarmContext";
+import { useState, useContext } from "react";
+import { FarmContext } from "../context/FarmContext"; // Ensure this import is correct
 
 const WorkerTask = () => {
-  const { apiRequest } = useFarmContext();
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({ title: "", description: "", deadline: "", farm_id: "" });
+  const farmContext = useContext(FarmContext); // Using the correct hook
+  const { tasks, message, addTask, deleteTask, updateTaskStatus, updateTask } = farmContext; // Accessing the context values
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  const [newTask, setNewTask] = useState({ worker_name: "", worker_id: "", title: "", farm_name: "", deadline: "" });
+  const [editingTaskId, setEditingTaskId] = useState(null); // Track which task is being edited
 
-  const fetchTasks = async () => {
-    try {
-      const response = await apiRequest("/worker_tasks/my_tasks", "GET");
-      setTasks(response.tasks);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
+  const handleAddTask = () => {
+    const addedTask = {
+      id: tasks.length + 1,
+      ...newTask,
+      status: "Pending"
+    };
+    addTask(addedTask);
+    setNewTask({ worker_name: "", worker_id: "", title: "", farm_name: "", deadline: "" });
   };
 
-  const handleAddTask = async () => {
-    try {
-      await apiRequest("/worker_tasks/add_task", "POST", newTask);
-      fetchTasks();
-    } catch (error) {
-      console.error("Error adding task:", error);
-    }
+  const handleDeleteTask = (taskId) => {
+    deleteTask(taskId);
   };
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      await apiRequest(`/worker_tasks/delete_task/${taskId}`, "DELETE");
-      fetchTasks();
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
+  const handleUpdateTaskStatus = (taskId, status) => {
+    updateTaskStatus(taskId, status);
   };
 
-  const handleUpdateTask = async (taskId, status) => {
-    try {
-      await apiRequest(`/worker_tasks/update_task_progress/${taskId}`, "PUT", { status });
-      fetchTasks();
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
+  const handleEditTask = (taskId) => {
+    const taskToEdit = tasks.find((task) => task.id === taskId);
+    setNewTask({ ...taskToEdit });
+    setEditingTaskId(taskId);
+  };
+
+  const handleSaveTask = () => {
+    updateTask(editingTaskId, newTask);
+    setEditingTaskId(null);
+    setNewTask({ worker_name: "", worker_id: "", title: "", farm_name: "", deadline: "" });
   };
 
   return (
-    <div>
-      <h2>My Tasks</h2>
+    <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold mb-4 text-blue-700">My Tasks</h2>
+      {message && <p className="text-green-600 font-semibold">{message}</p>}
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>
-            <h3>{task.title}</h3>
-            <p>{task.description}</p>
-            <p>Deadline: {task.deadline}</p>
-            <p>Status: {task.status}</p>
-            <button onClick={() => handleUpdateTask(task.id, "in progress")}>In Progress</button>
-            <button onClick={() => handleUpdateTask(task.id, "completed")}>Completed</button>
-            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+          <li key={task.id} className="border-b py-4 bg-white p-4 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-purple-600">{task.title}</h3>
+            <p className="text-gray-600">Worker: <span className="text-blue-500">{task.worker_name}</span> (ID: {task.worker_id})</p>
+            <p className="text-gray-600">Farm: <span className="text-green-500">{task.farm_name}</span></p>
+            <p className="text-sm text-gray-500">Deadline: {task.deadline}</p>
+            <p className="text-sm text-gray-700">Status: {task.status}</p>
+            <div className="mt-2 space-x-2">
+              <button
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg"
+                onClick={() => handleUpdateTaskStatus(task.id, "in progress")}
+              >
+                In Progress
+              </button>
+              <button
+                className="px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded-lg"
+                onClick={() => handleUpdateTaskStatus(task.id, "completed")}
+              >
+                Completed
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 hover:bg-red-700 text-white rounded-lg"
+                onClick={() => handleDeleteTask(task.id)}
+              >
+                Delete
+              </button>
+              <button
+                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-700 text-white rounded-lg"
+                onClick={() => handleEditTask(task.id)}
+              >
+                Edit
+              </button>
+            </div>
           </li>
         ))}
       </ul>
-      <h3>Add Task</h3>
-      <input type="text" placeholder="Title" onChange={(e) => setNewTask({ ...newTask, title: e.target.value })} />
-      <input type="text" placeholder="Description" onChange={(e) => setNewTask({ ...newTask, description: e.target.value })} />
-      <input type="date" onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })} />
-      <input type="text" placeholder="Farm ID" onChange={(e) => setNewTask({ ...newTask, farm_id: e.target.value })} />
-      <button onClick={handleAddTask}>Add Task</button>
+
+      <h3 className="text-xl font-bold mt-6 text-purple-700">{editingTaskId ? "Update Task" : "Add Task"}</h3>
+      <div className="space-y-2 bg-white p-4 rounded-lg shadow">
+        <input
+          className="w-full p-2 border rounded text-gray-700"
+          type="text"
+          placeholder="Worker Name"
+          onChange={(e) => setNewTask({ ...newTask, worker_name: e.target.value })}
+          value={newTask.worker_name}
+        />
+        <input
+          className="w-full p-2 border rounded text-gray-700"
+          type="text"
+          placeholder="Worker ID"
+          onChange={(e) => setNewTask({ ...newTask, worker_id: e.target.value })}
+          value={newTask.worker_id}
+        />
+        <input
+          className="w-full p-2 border rounded text-gray-700"
+          type="text"
+          placeholder="Task Name"
+          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+          value={newTask.title}
+        />
+        <input
+          className="w-full p-2 border rounded text-gray-700"
+          type="text"
+          placeholder="Farm Name"
+          onChange={(e) => setNewTask({ ...newTask, farm_name: e.target.value })}
+          value={newTask.farm_name}
+        />
+        <input
+          className="w-full p-2 border rounded text-gray-700"
+          type="date"
+          onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+          value={newTask.deadline}
+        />
+        <button
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg"
+          onClick={editingTaskId ? handleSaveTask : handleAddTask}
+        >
+          {editingTaskId ? "Save Changes" : "Add Task"}
+        </button>
+      </div>
     </div>
   );
 };
