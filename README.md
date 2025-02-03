@@ -135,7 +135,7 @@ A manager oversees all farm activities, including task assignment and worker man
 - DELETE	/tasks/:id	  Delete a task
 
 ## Live Demo & Deployment
-- 🔗 Live Application: https://phasefrontend-git-main-anthonyocmpo1s-projects.vercel.app/
+- 🔗 Live Application:https://frontendphase4.vercel.app/
 - 🎥 Demo Video: https://www.youtube.com/live/xT7xl00nxos
 
 
