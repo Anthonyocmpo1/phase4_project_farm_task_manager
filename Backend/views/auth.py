@@ -21,6 +21,11 @@ def register_user():
     # Additional validation for email format
     if '@' not in data['email']:
         return jsonify({"error": "Invalid email format"}), 400
+    
+    # Validate role (must be either 'worker' or 'manager')
+    role = data.get('role', 'worker')  # Default to 'worker' if no role is provided
+    if role not in ['worker', 'manager']:
+        return jsonify({"error": "Invalid role. Must be 'worker' or 'manager'"}), 400
 
     # Check if user already exists
     if User.query.filter_by(username=data['username']).first() or User.query.filter_by(email=data['email']).first():
@@ -28,7 +33,7 @@ def register_user():
 
     # Create new user
     hashed_password = generate_password_hash(data['password'])
-    new_user = User(username=data['username'], email=data['email'], password_hash=hashed_password, role=data.get('role', 'worker'))
+    new_user = User(username=data['username'], email=data['email'], password_hash=hashed_password, role=role)
     db.session.add(new_user)
     db.session.commit()
 
@@ -36,7 +41,6 @@ def register_user():
     send_welcome_email(new_user.email)
 
     return jsonify({"message": "User created successfully!"}), 201
-
 
 # Login route
 @auth_bp.route('/login', methods=['POST'])
